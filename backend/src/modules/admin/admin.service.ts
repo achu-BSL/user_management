@@ -9,7 +9,6 @@ export class AdminService {
 
   async getUsers(q: string) {
     // where: {} //todo retrvie expect current user.
-    console.log(q);
     const users = await this.prisma.user.findMany({
       where: {
         OR: [
@@ -31,7 +30,6 @@ export class AdminService {
         admin: true,
       },
     });
-    console.log(users);
     return users.map((user) => {
       const { password, admin, ...rest } = user;
       return { ...rest, isAdmin: admin !== null };
@@ -54,7 +52,6 @@ export class AdminService {
         where: { id },
       });
     } catch (err) {
-      console.log(err);
       throw new BadRequestException();
     }
   }
