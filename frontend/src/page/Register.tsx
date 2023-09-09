@@ -119,7 +119,7 @@ export const Register: FC = () => {
               className={`${styles.inputStyle} ${
                 errors.password ? "border-b-2 border-b-red-600" : ""
               }`}
-              type="text"
+              type="password"
               id="password"
               {...register("password")}
             />
@@ -135,7 +135,7 @@ export const Register: FC = () => {
               className={`${styles.inputStyle} ${
                 errors.confrimPassword ? "border-b-2 border-b-red-600" : ""
               }`}
-              type="text"
+              type="password"
               id="confirmPassword"
               {...register("confrimPassword")}
             />

@@ -7,8 +7,14 @@ import { LoginFormData } from "../interfaces/zod.interface";
 import { useAppDispatch } from "../hooks/hooks";
 import { addMessage } from "../app/features/message/messageSlice";
 import { Link } from "react-router-dom";
+import axios, { isAxiosError } from "axios";
+import { baseUrl } from "../common/common";
+import { useSelector } from "react-redux";
+import { RootState } from "../app/store";
+import { setIsLoading } from "../app/features/isLoading/isLoadingSlice";
 
 export const Login: FC = () => {
+  const isLoading = useSelector((state: RootState) => state.isLoading);
   const {
     register,
     handleSubmit,
@@ -16,8 +22,25 @@ export const Login: FC = () => {
   } = useForm<LoginFormData>({ resolver: zodResolver(loginSchema) });
   const dispatch = useAppDispatch();
 
-  const submitData = (data: LoginFormData) => {
-    console.log(data);
+  const submitData = async (data: LoginFormData) => {
+    try {
+      dispatch(setIsLoading(true));
+      await axios.post(`${baseUrl}/login`, {
+        email: data.email,
+        password: data.password
+      })
+      dispatch(addMessage({id: Date.now().toString(), message: "Login successfully", isError: false}))
+    } catch (err) {
+      let error = "OOPS Something wrong";
+      if(isAxiosError(err)) {
+        if(err.response?.status === 400) {
+          error = 'Incorrect Email or Password';
+        }
+      }
+      dispatch(addMessage({id: Date.now().toString(), message: error, isError: true}))
+    } finally {
+      dispatch(setIsLoading(false));
+    }
   };
 
   useEffect(() => {
@@ -72,14 +95,14 @@ export const Login: FC = () => {
               className={`${styles.inputStyle} ${
                 errors.password ? "border-b-2 border-b-red-600" : ""
               }`}
-              type="text"
+              type="password"
               id="password"
               {...register("password")}
             />
           </div>
           <div className="flex flex-col gap-2 justify-center sm:pt-12 pt-6 ">
-            <button className="border-2 border-slate-900 bg-primary rounded-md shadow-sm sm:py-2 py-1 text-white font-poppins">
-              Login
+            <button className="border-2 border-slate-900 bg-primary rounded-md shadow-sm sm:py-2 py-1 text-white font-poppins disabled:bg-opacity-50" disabled={isLoading}>
+              {isLoading ? "Checking...": "Login"}
             </button>
             <Link to="/register" className="font-poppins">Dont' have account ?</Link>
           </div>
