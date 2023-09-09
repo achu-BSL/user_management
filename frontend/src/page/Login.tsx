@@ -6,6 +6,7 @@ import { loginSchema } from "../utils/valiidator";
 import { LoginFormData } from "../interfaces/zod.interface";
 import { useAppDispatch } from "../hooks/hooks";
 import { addMessage } from "../app/features/message/messageSlice";
+import { Link } from "react-router-dom";
 
 export const Login: FC = () => {
   const {
@@ -80,7 +81,7 @@ export const Login: FC = () => {
             <button className="border-2 border-slate-900 bg-primary rounded-md shadow-sm sm:py-2 py-1 text-white font-poppins">
               Login
             </button>
-            <p className="font-poppins">Dont' have account ?</p>
+            <Link to="/register" className="font-poppins">Dont' have account ?</Link>
           </div>
         </form>
       </div>

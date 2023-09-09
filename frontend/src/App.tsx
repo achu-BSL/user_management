@@ -13,8 +13,7 @@ export const App: FC = () => {
       <MessageContainer />
       <Routes>
         <Route path="/register" element={<Register />} />
-        <Route path="/" element={<Login />} />
-        {/**Todo - change the path to /register*/}
+        <Route path="/login" element={<Login />} />
       </Routes>
     </>
   );

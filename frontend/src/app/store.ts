@@ -1,9 +1,11 @@
 import { configureStore } from '@reduxjs/toolkit';
 import messageReducer from './features/message/messageSlice';
+import isLoadingReducer from './features/isLoading/isLoadingSlice'
 
 const store = configureStore({
     reducer: {
-        message: messageReducer
+        message: messageReducer,
+        isLoading: isLoadingReducer
     }
 })
 

@@ -14,7 +14,7 @@ export class UserService {
      * @returns userDetails | undefined(if not exist)
      */
     private async isUserExist (email: string) {
-        const user = this.prisma.user.findUnique({
+        const user = await this.prisma.user.findUnique({
             where: {email}
         })
         return user;
@@ -27,7 +27,7 @@ export class UserService {
      * @throws BadReuestException - If user is exist within the email.
      */
     async register ({email, password}: RegisterUserDto) {
-        if(this.isUserExist(email)) throw new BadRequestException();
+        if(await this.isUserExist(email) !== null) throw new BadRequestException();
         const hashedPassword = await bcrypt.hash(password, 10);
         const user = await this.prisma.user.create({
             data: {

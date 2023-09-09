@@ -1,4 +1,4 @@
-import { FC, useEffect } from "react";
+import { FC, useEffect, useRef, useState } from "react";
 import { styles } from "../styles";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -11,13 +11,20 @@ import {
 } from "../app/features/message/messageSlice";
 import axios from "axios";
 import { baseUrl } from "../common/common";
+import { Link, useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { RootState } from "../app/store";
+import { setIsLoading } from "../app/features/isLoading/isLoadingSlice";
 
 export const Register: FC = () => {
+  const isLoading = useSelector((state: RootState) => state.isLoading);
+  const navigator = useNavigate();
   const dispatch = useAppDispatch();
   const {
     register,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm<RegisterFormData>({ resolver: zodResolver(registerSchema) });
 
   const addMessageDispatch = (msg: MessageInterface) => {
@@ -47,15 +54,36 @@ export const Register: FC = () => {
   }, [errors]);
 
   const submitData = async (data: RegisterFormData) => {
-    const res = await axios.post(`${baseUrl}/register`, {
-      email: data.email,
-      password: data.password
-    });
-    console.log(res.data);
-    if(res.data) {
-      addMessageDispatch({id: Date.now().toString(), message: "Register successfylly", isError: false})
-    } else if (res.status === 400) {
-      addMessageDispatch({id: Date.now().toString(), message: "Email already taken", isError: true})
+    try {
+      dispatch(setIsLoading(true));
+      await axios.post(`${baseUrl}/register`, {
+        email: data.email,
+        password: data.password,
+      });
+      reset();
+      addMessageDispatch({
+        id: Date.now().toString(),
+        message: "Register successfylly",
+        isError: false,
+      });
+      navigator("/login");
+    } catch (err) {
+      let errorMessage = "OOPS Something fishy.!";
+      let isError = true;
+
+      if (axios.isAxiosError(err)) {
+        if (err.response?.status === 400) {
+          errorMessage = "Email already taken";
+        }
+      }
+
+      addMessageDispatch({
+        id: Date.now().toString(),
+        message: errorMessage,
+        isError: isError,
+      });
+    } finally {
+      dispatch(setIsLoading(false));
     }
   };
 
@@ -113,10 +141,15 @@ export const Register: FC = () => {
             />
           </div>
           <div className="flex flex-col gap-2 justify-center sm:pt-12 pt-6 ">
-            <button className="border-2 border-slate-900 bg-primary rounded-md shadow-sm sm:py-2 py-1 text-white font-poppins">
-              Register
+            <button
+              className="border-2 border-slate-900 bg-primary rounded-md shadow-sm sm:py-2 py-1 text-white font-poppins disabled:bg-opacity-50"
+              disabled={isLoading}
+            >
+              {isLoading ? "Checking..." : "Register"}
             </button>
-            <p className="font-poppins">Already have Account ?</p>
+            <Link to="/login" className="font-poppins">
+              Already have Account ?
+            </Link>
           </div>
         </form>
       </div>
