@@ -1,19 +1,21 @@
 import { FC, useEffect } from "react";
-import { styles } from "../styles";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema } from "../utils/valiidator";
 import { LoginFormData } from "../interfaces/zod.interface";
 import { useAppDispatch } from "../hooks/hooks";
 import { addMessage } from "../app/features/message/messageSlice";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios, { isAxiosError } from "axios";
 import { baseUrl } from "../common/common";
 import { useSelector } from "react-redux";
 import { RootState } from "../app/store";
 import { setIsLoading } from "../app/features/isLoading/isLoadingSlice";
+import { User, addUser } from "../app/features/user/userSlice";
+import { styles } from "../styles";
 
 export const Login: FC = () => {
+  const navigator = useNavigate();
   const isLoading = useSelector((state: RootState) => state.isLoading);
   const {
     register,
@@ -25,11 +27,13 @@ export const Login: FC = () => {
   const submitData = async (data: LoginFormData) => {
     try {
       dispatch(setIsLoading(true));
-      await axios.post(`${baseUrl}/login`, {
+      const res = await axios.post(`${baseUrl}/login`, {
         email: data.email,
         password: data.password
       })
       dispatch(addMessage({id: Date.now().toString(), message: "Login successfully", isError: false}))
+      dispatch(addUser(res.data as User));
+      navigator("/");
     } catch (err) {
       let error = "OOPS Something wrong";
       if(isAxiosError(err)) {

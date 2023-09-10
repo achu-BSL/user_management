@@ -20,9 +20,12 @@ export class UserService {
    * @param email - To find the user.
    * @returns userDetails | undefined(if not exist)
    */
-  private async isUserExist(email: string) {
-    const user = await this.prisma.user.findUnique({
-      where: { email },
+  private async isUserExist(email: string, username: string) {
+    const user = await this.prisma.user.findFirst({
+      where: {OR: [
+        {email},
+        {username}
+      ]}
     });
     return user;
   }
@@ -33,12 +36,13 @@ export class UserService {
    * @returns userDetails - The new userDetails from database.
    * @throws BadReuestException - If user is exist within the email.
    */
-  async register({ email, password }: RegisterUserDto) {
-    if ((await this.isUserExist(email)) !== null)
+  async register({ email, password, username }: RegisterUserDto) {
+    if ((await this.isUserExist(email, username)) !== null)
       throw new BadRequestException();
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = await this.prisma.user.create({
       data: {
+        username,
         email,
         password: hashedPassword,
       },
@@ -53,7 +57,11 @@ export class UserService {
     if (user == null) throw new BadRequestException();
     if (!(await bcrypt.compare(loginUserDto.password, user.password)))
       throw new BadRequestException();
+    return user;
+  }
 
-    return await this.authService.jwtSign(user.email, user.id);
+  async clear () {
+    await this.prisma.user.deleteMany();
+    return "Deleted";
   }
 }

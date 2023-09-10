@@ -1,4 +1,4 @@
-import { FC, useEffect, useRef, useState } from "react";
+import { FC, useEffect } from "react";
 import { styles } from "../styles";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -57,6 +57,7 @@ export const Register: FC = () => {
     try {
       dispatch(setIsLoading(true));
       await axios.post(`${baseUrl}/register`, {
+        username: data.username,
         email: data.email,
         password: data.password,
       });
@@ -73,7 +74,7 @@ export const Register: FC = () => {
 
       if (axios.isAxiosError(err)) {
         if (err.response?.status === 400) {
-          errorMessage = "Email already taken";
+          errorMessage = "Email or Username already taken";
         }
       }
 
@@ -98,6 +99,19 @@ export const Register: FC = () => {
           className="flex flex-col sm:gap-2 gap-1"
           action=""
         >
+          <div className="flex flex-col">
+            <label className="font-poppins font-medium" htmlFor="email">
+              Username
+            </label>
+            <input
+              className={`${styles.inputStyle} ${
+                errors.username ? "border-b-2 border-b-red-600" : ""
+              }`}
+              type="text"
+              id="username"
+              {...register("username")}
+            />
+          </div>
           <div className="flex flex-col">
             <label className="font-poppins font-medium" htmlFor="email">
               Email

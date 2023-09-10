@@ -5,7 +5,7 @@ const isLoadingSlice = createSlice({
     name: "isLoading",
     initialState: false,
     reducers: {
-        setIsLoading: (state, action: PayloadAction<boolean>) => {
+        setIsLoading: (_state, action: PayloadAction<boolean>) => {
             return action.payload;
         }
     }
