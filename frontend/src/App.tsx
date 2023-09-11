@@ -6,6 +6,7 @@ import { Navbar } from "./components/Navbar";
 import { Login } from "./page/Login";
 import { MessageContainer } from "./components/MessageContainer";
 import { Home } from "./page/Home";
+import { Profile } from "./page/Profile";
 
 export const App: FC = () => {
   return (
@@ -16,6 +17,7 @@ export const App: FC = () => {
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
         <Route path="/" element={<Home />} />
+        <Route path="/profile" element={<Profile />} />
       </Routes>
     </>
   );

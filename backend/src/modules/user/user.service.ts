@@ -1,12 +1,14 @@
 import {
+  BadGatewayException,
   BadRequestException,
   Injectable,
-  InternalServerErrorException,
 } from '@nestjs/common';
 import { RegisterUserDto } from './dto/Register-user.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
 import { AuthService } from '../auth/auth.service';
+import { User } from '@prisma/client';
+import { UpdateUserDto } from './dto/Update-user.dto';
 
 @Injectable()
 export class UserService {
@@ -22,10 +24,7 @@ export class UserService {
    */
   private async isUserExist(email: string, username: string) {
     const user = await this.prisma.user.findFirst({
-      where: {OR: [
-        {email},
-        {username}
-      ]}
+      where: { OR: [{ email }, { username }] },
     });
     return user;
   }
@@ -50,6 +49,11 @@ export class UserService {
     return user;
   }
 
+  /**
+   * Login with email and password.
+   * @param loginUserDto - { email: string, password: string }
+   * @returns user details from the data base.
+   */
   async login(loginUserDto: RegisterUserDto) {
     const user = await this.prisma.user.findUnique({
       where: { email: loginUserDto.email },
@@ -60,8 +64,32 @@ export class UserService {
     return user;
   }
 
-  async clear () {
-    await this.prisma.user.deleteMany();
-    return "Deleted";
+  /**
+   *To update user deails.
+   * @param id - The UserId to find the specific user.
+   * @param user - The new details of the user to update.
+   * @returns  user new details.
+   * @throws BadRequestException - if there is any issue while 
+   * updating user (e.g. username or email already taken).
+   * @throws BadGetwayException - when couldn't find user whihing
+   * the id.
+   */
+  async updateUser(id: number, user: Partial<UpdateUserDto>) {
+    try {
+      const updatedUser = await this.prisma.user.update({
+        where: { id },
+        data: user,
+        select: {
+          email: true,
+          username: true,
+          profile: true
+        }
+      });
+
+      if(!updatedUser) throw new BadGatewayException();
+      return updatedUser;
+    } catch (err) {
+      throw new BadRequestException();
+    }
   }
 }

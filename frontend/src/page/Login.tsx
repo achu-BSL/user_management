@@ -30,6 +30,8 @@ export const Login: FC = () => {
       const res = await axios.post(`${baseUrl}/login`, {
         email: data.email,
         password: data.password
+      }, {
+        withCredentials: true
       })
       dispatch(addMessage({id: Date.now().toString(), message: "Login successfully", isError: false}))
       dispatch(addUser(res.data as User));

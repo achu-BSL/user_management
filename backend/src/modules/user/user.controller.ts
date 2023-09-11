@@ -1,8 +1,11 @@
-import { Body, Controller, Delete, Get, HttpCode, Post, Res } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Patch, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { RegisterUserDto } from './dto/Register-user.dto';
 import { UserService } from './user.service';
 import { Response } from 'express';
 import { AuthService } from '../auth/auth.service';
+import { AuthUserGuard } from '../auth/auth-user.guard';
+import { UpdateUserDto } from './dto/Update-user.dto';
+import { PayloadInterface } from '../auth/interface/Payload.interface';
 
 @Controller('')
 export class UserController {
@@ -26,13 +29,19 @@ export class UserController {
     const {id, password, ...rest} = user;
     response.cookie(
       'token',
-      await this.authService.jwtSign(rest.email, id),
-    );
+      await this.authService.jwtSign(id), {
+        httpOnly: true,
+        path: "/",
+      }
+      );
     return rest;
   }
 
-  @Delete('deleteall')
-  async clear () {
-    return this.userService.clear();
+  @Patch("profile/update")
+  @UseGuards(AuthUserGuard)
+  async updateProfile (@Req()req: Request & PayloadInterface, @Body() user: Partial<UpdateUserDto>) {
+    return this.userService.updateUser(req.userId, user);
   }
+
+
 }

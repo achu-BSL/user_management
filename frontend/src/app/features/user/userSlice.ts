@@ -4,29 +4,23 @@ export type User = {
   username: string | null;
   email: string | null;
   profile: string | null;
-};
+}
 
-const initialState: User = {
-  username: null,
-  email: null,
-  profile: null,
-};
+const initialState: User | null = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")!):  null;
 
 const userSlice = createSlice({
   name: "user",
   initialState,
   reducers: {
-    addUser: (_state: User, action: PayloadAction<User>) => {
+    addUser: (_state: User | null, action: PayloadAction<User>) => {
+      localStorage.setItem("user", JSON.stringify(action.payload));
       return {
         ...action.payload,
       };
     },
     removeUser: () => {
-      return {
-        username: null,
-        email: null,
-        profile: null,
-      };
+      localStorage.removeItem("user");
+      return null;
     },
   },
 });
