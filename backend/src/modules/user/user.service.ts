@@ -57,6 +57,9 @@ export class UserService {
   async login(loginUserDto: RegisterUserDto) {
     const user = await this.prisma.user.findUnique({
       where: { email: loginUserDto.email },
+      include: {
+        admin: true,
+      },
     });
     if (user == null) throw new BadRequestException();
     if (!(await bcrypt.compare(loginUserDto.password, user.password)))
@@ -69,7 +72,7 @@ export class UserService {
    * @param id - The UserId to find the specific user.
    * @param user - The new details of the user to update.
    * @returns  user new details.
-   * @throws BadRequestException - if there is any issue while 
+   * @throws BadRequestException - if there is any issue while
    * updating user (e.g. username or email already taken).
    * @throws BadGetwayException - when couldn't find user whihing
    * the id.
@@ -82,11 +85,11 @@ export class UserService {
         select: {
           email: true,
           username: true,
-          profile: true
-        }
+          profile: true,
+        },
       });
 
-      if(!updatedUser) throw new BadGatewayException();
+      if (!updatedUser) throw new BadGatewayException();
       return updatedUser;
     } catch (err) {
       throw new BadRequestException();

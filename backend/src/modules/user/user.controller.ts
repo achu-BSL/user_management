@@ -29,7 +29,7 @@ export class UserController {
     @Body() loginUserDto: RegisterUserDto,
   ) {
     const user = await this.userService.login(loginUserDto);
-    const {id, password, ...rest} = user;
+    const {id, password, admin, ...rest} = user;
     response.cookie(
       'token',
       await this.authService.jwtSign(id), {
@@ -37,7 +37,7 @@ export class UserController {
         path: "/",
       }
       );
-    return rest;
+    return {...rest, isAdmin: admin !== null};
   }
 
   @UseGuards(AuthUserGuard)
@@ -59,6 +59,5 @@ export class UserController {
     if(req.file) user.profile = req.file.filename;
     return this.userService.updateUser(req.userId, user);
   }
-
 
 }

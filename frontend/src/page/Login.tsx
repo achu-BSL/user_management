@@ -6,7 +6,7 @@ import { LoginFormData } from "../interfaces/zod.interface";
 import { useAppDispatch } from "../hooks/hooks";
 import { addMessage } from "../app/features/message/messageSlice";
 import { Link, useNavigate } from "react-router-dom";
-import axios, { isAxiosError } from "axios";
+import axios, { AxiosResponse, isAxiosError } from "axios";
 import { baseUrl } from "../common/common";
 import { useSelector } from "react-redux";
 import { RootState } from "../app/store";
@@ -27,14 +27,14 @@ export const Login: FC = () => {
   const submitData = async (data: LoginFormData) => {
     try {
       dispatch(setIsLoading(true));
-      const res = await axios.post(`${baseUrl}/login`, {
+      const res: AxiosResponse<User> = await axios.post(`${baseUrl}/login`, {
         email: data.email,
         password: data.password
       }, {
         withCredentials: true
       })
-      dispatch(addMessage({id: Date.now().toString(), message: "Login successfully", isError: false}))
-      dispatch(addUser(res.data as User));
+      dispatch(addMessage({id: Date.now().toString(), message: "Login successfully", isError: false}));
+      dispatch(addUser(res.data));
       navigator("/");
     } catch (err) {
       let error = "OOPS Something wrong";

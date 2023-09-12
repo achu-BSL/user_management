@@ -7,6 +7,7 @@ import { Login } from "./page/Login";
 import { MessageContainer } from "./components/MessageContainer";
 import { Home } from "./page/Home";
 import { Profile } from "./page/Profile";
+import { Dashboard } from "./page/Dashboard";
 
 export const App: FC = () => {
   return (
@@ -18,6 +19,7 @@ export const App: FC = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/" element={<Home />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/admin/dashboard" element={<Dashboard />} />
       </Routes>
     </>
   );

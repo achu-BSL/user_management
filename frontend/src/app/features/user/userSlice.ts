@@ -1,9 +1,11 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
 export type User = {
+  id?: number;
   username: string | null;
   email: string | null;
   profile: string | null;
+  isAdmin: boolean;
 }
 
 const initialState: User | null = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")!):  null;

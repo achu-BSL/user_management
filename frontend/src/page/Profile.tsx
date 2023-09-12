@@ -89,6 +89,7 @@ export const Profile: FC = () => {
       );
       setIsEditMode(_prev => false);
     } catch (err) {
+      console.log(err);
       let error = "OOPS something wrong";
       if (isAxiosError(err)) {
         if (err.response?.status === 400) {
@@ -120,6 +121,7 @@ export const Profile: FC = () => {
     }
   };
 
+  console.log(user);
   if (user === null) {
     return <Unauthorized />;
   }

@@ -17,11 +17,11 @@ model User {
   email String @unique
   password String
   profile String?
-  admin Admin?
+  admin Admin? 
 }
 
 model Admin {
   id Int @id @default(autoincrement())
-  user User @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId Int @unique
 }
