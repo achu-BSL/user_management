@@ -44,7 +44,7 @@ export class UserService {
         username,
         email,
         password: hashedPassword,
-      },
+      },   
     });
     return user;
   }
@@ -86,11 +86,15 @@ export class UserService {
           email: true,
           username: true,
           profile: true,
+          admin: {
+            select: {userId: true}
+          }
         },
       });
 
       if (!updatedUser) throw new BadGatewayException();
-      return updatedUser;
+      const {admin, ...rest} = updatedUser;
+      return {...rest, isAdmin: admin !== null};
     } catch (err) {
       throw new BadRequestException();
     }

@@ -15,13 +15,17 @@ export class AdminService {
         OR: [
           {
             username: {
-              contains: q
+              contains: q,
+              mode: "insensitive"
             },
+          },
+          {
             email: {
-              contains: q
-            }
-          }
-        ]
+              contains: q,
+              mode: "insensitive"
+            },
+          },
+        ],
       },
       include: {
         admin: true,
@@ -57,22 +61,22 @@ export class AdminService {
 
   async updateUser(userId: number, updateUserDto: Partial<UpdateUserDto>) {
     try {
-        const user = await this.prisma.user.update({
-            where: {id: userId},
-            data: updateUserDto
-        })
-        const {password, ...rest} = user;
-        return rest;
+      const user = await this.prisma.user.update({
+        where: { id: userId },
+        data: updateUserDto,
+      });
+      const { password, ...rest } = user;
+      return rest;
     } catch (err) {
-        throw new BadRequestException();
+      throw new BadRequestException();
     }
   }
 
-  async createUser (registerUserDto: RegisterUserDto) {
+  async createUser(registerUserDto: RegisterUserDto) {
     const user = await this.prisma.user.create({
-        data: registerUserDto
-    })
-    const {password, ...rest} = user;
+      data: registerUserDto,
+    });
+    const { password, ...rest } = user;
     return rest;
   }
 }
