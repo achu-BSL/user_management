@@ -19,35 +19,37 @@ export const Navbar: FC = () => {
             <div className="flex items-center">
               <Link
                 className="text-white font-poppins font-semibold text-lg"
-                to="/admin/dashbord"
+                to="/admin/dashboard"
               >
                 Admin
               </Link>
             </div>
           )}
           {user === null ? (
-            <h2 className="text-white font-poppins font-semibold text-lg">
+            <Link to="/login" className="text-white font-poppins font-semibold text-lg">
               Login
-            </h2>
+            </Link>
           ) : (
-            <>
-              <h2
-                onClick={() => dispatch(removeUser())}
-                className="text-white font-poppins font-semibold text-lg cursor-pointer"
-              >
-                Logout
-              </h2>
-              <Link to="/profile"
-                className="text-white font-poppins font-semibold text-lg cursor-pointer"
-              >
-                Profile
-              </Link>
-              <Link to="/"
+            <div className="flex gap-2">
+              <Link
+                to="/"
                 className="text-white font-poppins font-semibold text-lg cursor-pointer"
               >
                 Home
               </Link>
-            </>
+              <Link
+                to="/profile"
+                className="text-white font-poppins font-semibold text-lg cursor-pointer"
+              >
+                Profile
+              </Link>
+              <h2
+                onClick={() => dispatch(removeUser())}
+                className="text-white font-poppins text-lg cursor-pointer"
+              >
+                Logout
+              </h2>
+            </div>
           )}
         </div>
       </div>

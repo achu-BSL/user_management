@@ -17,9 +17,10 @@ import { RootState } from "../app/store";
 import { setIsLoading } from "../app/features/isLoading/isLoadingSlice";
 
 export const Register: FC = () => {
-  const isLoading = useSelector((state: RootState) => state.isLoading);
   const navigator = useNavigate();
+  if(useSelector((state: RootState) => state.user) != null) navigator("/");
   const dispatch = useAppDispatch();
+  const isLoading = useSelector((state: RootState) => state.isLoading);
   const {
     register,
     handleSubmit,

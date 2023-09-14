@@ -16,6 +16,7 @@ import { styles } from "../styles";
 
 export const Login: FC = () => {
   const navigator = useNavigate();
+  if (useSelector((state: RootState) => state.user) != null) navigator("/");
   const isLoading = useSelector((state: RootState) => state.isLoading);
   const {
     register,
@@ -27,23 +28,35 @@ export const Login: FC = () => {
   const submitData = async (data: LoginFormData) => {
     try {
       dispatch(setIsLoading(true));
-      const res: AxiosResponse<User> = await axios.post(`${baseUrl}/login`, {
-        email: data.email,
-        password: data.password
-      }, {
-        withCredentials: true
-      })
-      dispatch(addMessage({id: Date.now().toString(), message: "Login successfully", isError: false}));
+      const res: AxiosResponse<User> = await axios.post(
+        `${baseUrl}/login`,
+        {
+          email: data.email,
+          password: data.password,
+        },
+        {
+          withCredentials: true,
+        }
+      );
+      dispatch(
+        addMessage({
+          id: Date.now().toString(),
+          message: "Login successfully",
+          isError: false,
+        })
+      );
       dispatch(addUser(res.data));
       navigator("/");
     } catch (err) {
       let error = "OOPS Something wrong";
-      if(isAxiosError(err)) {
-        if(err.response?.status === 400) {
-          error = 'Incorrect Email or Password';
+      if (isAxiosError(err)) {
+        if (err.response?.status === 400) {
+          error = "Incorrect Email or Password";
         }
       }
-      dispatch(addMessage({id: Date.now().toString(), message: error, isError: true}))
+      dispatch(
+        addMessage({ id: Date.now().toString(), message: error, isError: true })
+      );
     } finally {
       dispatch(setIsLoading(false));
     }
@@ -107,10 +120,15 @@ export const Login: FC = () => {
             />
           </div>
           <div className="flex flex-col gap-2 justify-center sm:pt-12 pt-6 ">
-            <button className="border-2 border-slate-900 bg-primary rounded-md shadow-sm sm:py-2 py-1 text-white font-poppins disabled:bg-opacity-50" disabled={isLoading}>
-              {isLoading ? "Checking...": "Login"}
+            <button
+              className="border-2 border-slate-900 bg-primary rounded-md shadow-sm sm:py-2 py-1 text-white font-poppins disabled:bg-opacity-50"
+              disabled={isLoading}
+            >
+              {isLoading ? "Checking..." : "Login"}
             </button>
-            <Link to="/register" className="font-poppins">Dont' have account ?</Link>
+            <Link to="/register" className="font-poppins">
+              Dont' have account ?
+            </Link>
           </div>
         </form>
       </div>

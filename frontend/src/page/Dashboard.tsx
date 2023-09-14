@@ -5,9 +5,22 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { userSchema } from "../utils/valiidator";
 import { addMessage } from "../app/features/message/messageSlice";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import { RootState } from "../app/store";
 
 export const Dashboard: FC = () => {
+  const navigator = useNavigate();
+  const currUser = useSelector((state: RootState) => state.user);
+  if (currUser == null) {
+    navigator("/login");
+    return <h1>Loading</h1>;
+  } else if (!currUser.isAdmin) {
+    navigator("/");
+    return <h1>Loading</h1>;
+  }
+
+
   const [users, setUsers] = useState<User[]>([]);
   const [editUserId, setEditUserId] = useState<null | number>(null);
   const [editUserData, setEditUserData] = useState<User | null>(null);
@@ -142,15 +155,23 @@ export const Dashboard: FC = () => {
       <h1 className="text-center text-2xl font-bold mb-4">Admin Dashboard</h1>
 
       <div className="overflow-x-auto bg-white shadow-md sm:rounded-lg max-w-4xl mx-auto">
-        <input
-          onChange={(e) => {
-            const value = e.currentTarget.value;
-            setSerchQuery(() => value)
-        }}
-          className="min-w-full py-2 px-4 border-2 focus:border-slate-900"
-          type="text"
-          placeholder="Search by username or email"
-        />
+        <div className="flex justify-between gap-2">
+          <input
+            onChange={(e) => {
+              const value = e.currentTarget.value;
+              setSerchQuery(() => value);
+            }}
+            className="flex-1 py-2 px-4 border-2 focus:border-slate-900"
+            type="text"
+            placeholder="Search by username or email"
+          />
+          <Link
+            to="/admin/adduser"
+            className="border-2 bg-secondary text-white font-semibold px-4 py-2 rounded-md"
+          >
+            Add User
+          </Link>
+        </div>
         <table className="min-w-full table-auto">
           <thead>
             <tr className="bg-gray-100">
@@ -232,21 +253,27 @@ export const Dashboard: FC = () => {
                         </>
                       ) : (
                         <>
-                          <button
-                            onClick={() => {
-                              setEditUserData((_prev) => user);
-                              setEditUserId((_prev) => user.id || null);
-                            }}
-                            className="text-blue-600 hover:underline mr-2"
-                          >
-                            Edit
-                          </button>
-                          <button
-                            onClick={() => removeButtonHandler(user.id || 0)}
-                            className="text-red-600 hover:underline"
-                          >
-                            Remove
-                          </button>
+                          {currUser?.username !== user.username && (
+                            <>
+                              <button
+                                onClick={() => {
+                                  setEditUserData((_prev) => user);
+                                  setEditUserId((_prev) => user.id || null);
+                                }}
+                                className="text-blue-600 hover:underline mr-2 disabled:text-opacity-50"
+                              >
+                                Edit
+                              </button>
+                              <button
+                                onClick={() =>
+                                  removeButtonHandler(user.id || 0)
+                                }
+                                className="text-red-600 hover:underline disabled:text-opacity-50"
+                              >
+                                Remove
+                              </button>
+                            </>
+                          )}
                         </>
                       )}
                     </td>
@@ -260,3 +287,4 @@ export const Dashboard: FC = () => {
     </div>
   );
 };
+

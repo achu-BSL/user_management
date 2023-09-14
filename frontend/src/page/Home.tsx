@@ -5,8 +5,8 @@ import { Unauthorized } from "../components/Unauthorized";
 
 export const Home: FC = () => {
   const user = useSelector((state: RootState) => state.user);
-  if(!user.email || !user.username) {
-    return !user.email && <Unauthorized />
+  if(user === null) {
+    return  <Unauthorized />
   }
   return (
     <>

@@ -13,6 +13,7 @@ import { addMessage } from "../app/features/message/messageSlice";
 import axios, { AxiosResponse, isAxiosError } from "axios";
 import { baseUrl } from "../common/common";
 import { setIsLoading } from "../app/features/isLoading/isLoadingSlice";
+import { ProfileFormData } from "../interfaces/zod.interface";
 
 export const Profile: FC = () => {
   const [isEditMode, setIsEditMode] = useState(false);
@@ -25,9 +26,13 @@ export const Profile: FC = () => {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<User>({ resolver: zodResolver(userSchema) });
+  } = useForm<ProfileFormData>({ resolver: zodResolver(userSchema) });
   const dispatch = useAppDispatch();
 
+  /**
+   * The useEffect for print the -
+   * message to message container.
+   */
   useEffect(() => {
     if (errors.email?.message) {
       dispatch(
@@ -48,7 +53,13 @@ export const Profile: FC = () => {
     }
   }, [errors]);
 
-  const submitForm = async (data: User) => {
+  /**
+   * The submitHandler that invoked by -
+   * "handleSubmit" function (imported from useFormik)
+   * @param data - The submited data.
+   * @returns void
+   */
+  const submitForm = async (data: ProfileFormData) => {
     const formData = new FormData();
     if (data.email !== user?.email && data.email != null) {
       formData.append("email", data.email);
@@ -112,16 +123,24 @@ export const Profile: FC = () => {
     }
   };
 
+
+  /**
+   * Profile input change event Handler.
+   * @param e ChangeEvent - To get the choosen file.
+   */
   const handleProfileInp = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files !== null) {
       const file = e.target.files[0];
       if (file) {
-        setAvatar((prev) => file);
+        setAvatar((_prev) => file);
       }
     }
   };
 
-  console.log(user);
+  /**
+   * Return Unauthorized component if -
+   * user variable is null.
+   */
   if (user === null) {
     return <Unauthorized />;
   }
@@ -197,7 +216,7 @@ export const Profile: FC = () => {
                 {isLoading ? "Updating..." : "save"}
               </button>
               <button
-                onClick={() => setIsEditMode((prev) => false)}
+                onClick={() => setIsEditMode((_prev) => false)}
                 type="button"
                 className="font-poppins font-semibold bg-secondary text-white rounded-md sm:py-2 py-1 sm:mt-4 mt-2"
               >
@@ -206,7 +225,7 @@ export const Profile: FC = () => {
             </div>
           ) : (
             <button
-              onClick={() => setIsEditMode((prev) => true)}
+              onClick={() => setIsEditMode((_prev) => true)}
               type="button"
               className="font-poppins font-semibold bg-secondary text-white rounded-md sm:py-2 py-1 sm:mt-10 mt-6"
             >
